@@ -3,36 +3,43 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require("express-session");
 
-var session = require("express-session");   // <-- ADD THIS
+require("dotenv").config();   // Load .env FIRST
 
+// ROUTES
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testRouter = require('./routes/login');
+
+// MONGOOSE
 const mongoose = require('mongoose');
 
-require("dotenv").config();
+// Connect to MongoDB (NO old options)
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);  
+    console.log("MongoDB connected successfully");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+};
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log("MongoDB connected successfully"))
-.catch(err => console.log("MongoDB connection error:", err));
-
+connectDB();
 
 
 var app = express();
 
-// ---- SESSION MIDDLEWARE (VERY IMPORTANT) ----
+// ---- SESSION MIDDLEWARE ----
 app.use(session({
-  secret: "MY_SUPER_SECRET_KEY_123456789",  // change to any long string
+  secret: "MY_SUPER_SECRET_KEY_123456789",
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }                 // secure:false must be for localhost
+  cookie: { 
+    secure: false,     
+    maxAge: 24 * 60 * 60 * 1000  // 1 day
+  }
 }));
-
-// --------------------------------------------
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -44,11 +51,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', testRouter);     // login, signup, dashboard, switch-user
+// ROUTES
+app.use('/', testRouter);     
 app.use('/demo', indexRouter);
 app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
+// catch 404
 app.use(function(req, res, next) {
   next(createError(404));
 });
