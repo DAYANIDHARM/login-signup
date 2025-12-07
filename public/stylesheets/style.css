@@ -1,0 +1,11 @@
+a {
+  color: #00B7FF;
+}
+
+.body-title{
+  background-color: #cf2e2e;
+  color: rgb(255, 255, 255);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: center;
+}

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bird Futuristic Login</title>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+      /* Reset & base */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #000;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* allow scrolling on small devices */
+        overflow-y: auto;
+        min-height: 100vh;
+      }
+
+      /* VANTA background container (covers entire viewport) */
+      #vanta {
+        position: fixed;
+        inset: 0; /* top:0; left:0; right:0; bottom:0 */
+        z-index: -1; /* behind everything */
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* don't block clicks/touches */
+      }
+
+      /* Page wrapper using flexbox to perfectly center content */
+      .page-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px; /* breathing room on very small screens */
+      }
+
+      /* Card */
+      .card {
+        width: clamp(300px, 90%, 420px); /* responsive width */
+        padding: 36px 28px;
+        background: rgba(0,0,0,0.25);
+        backdrop-filter: blur(14px) saturate(120%);
+        border-radius: 16px;
+        box-shadow: 0 8px 40px rgba(0,255,255,0.12), 0 0 28px rgba(0,255,255,0.06) inset;
+        animation: popUp 700ms cubic-bezier(.2,.9,.2,1);
+        max-width: 100%;
+      }
+
+      @keyframes popUp {
+        from { opacity: 0; transform: translateY(12px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      .card h2 {
+        text-align: center;
+        font-size: 28px;
+        letter-spacing: 3px;
+        margin-bottom: 18px;
+        color: #ffffff;
+        text-shadow: 0 0 16px rgba(0,255,255,0.18);
+      }
+
+      form { width: 100%; }
+
+      .field {
+        display: block;
+        width: 100%;
+      }
+
+      .card input[type="text"],
+      .card input[type="password"] {
+        width: 100%;
+        padding: 12px 14px;
+        margin-top: 12px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.06);
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: all .25s ease;
+      }
+
+      .card input:focus {
+        background: rgba(255,255,255,0.09);
+        box-shadow: 0 6px 20px rgba(0,230,255,0.08);
+        transform: translateY(-1px);
+        border-color: rgba(0,230,255,0.18);
+      }
+
+      .card button {
+        width: 100%;
+        padding: 12px 14px;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        background: linear-gradient(45deg,#00eaff,#0066ff);
+        color: #fff;
+        box-shadow: 0 6px 24px rgba(0,140,255,0.12);
+        transition: transform .18s ease, box-shadow .18s ease;
+      }
+
+      .card button:active { transform: scale(.995); }
+      .card button:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,160,255,0.16); }
+
+      .create { text-align: center; margin-top: 14px; font-size: 14px; }
+      .create a { color: #aeefff; font-weight: 600; text-decoration: none; }
+
+      /* Error box */
+      .error-box {
+        background: rgba(255,0,0,0.12);
+        border: 1px solid rgba(255,77,77,0.2);
+        padding: 10px 12px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        color: #ffdede;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      /* Smaller screens tweaks */
+      @media (max-width: 420px) {
+        .card { padding: 26px 18px; border-radius: 12px; }
+        .card h2 { font-size: 22px; letter-spacing: 2px; }
+        .card input { padding: 10px 12px; font-size: 14px; }
+        .create { font-size: 13px; }
+      }
+
+      /* Very small devices (portrait) */
+      @media (max-height: 600px) and (orientation: portrait) {
+        .page-wrap { padding: 16px; }
+        .card { padding: 18px; }
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <!-- VANTA Container -->
+    <div id="vanta"></div>
+
+    <div class="page-wrap">
+      <!-- LOGIN CARD (centered by flexbox) -->
+      <div class="card" id="loginBox">
+        <h2>LOGIN</h2>
+
+        <% if (error && error.length > 0) { %>
+        <div class="error-box" id="errorBox"><%= error %></div>
+        <% } %>
+
+        <form action="/loginUser" method="post" novalidate>
+          <label class="field" for="username" hidden>Username</label>
+          <input id="username" type="text" name="username" value="<%= data.username || '' %>" placeholder="Enter Username" required />
+
+          <label class="field" for="password" hidden>Password</label>
+          <input id="password" type="password" name="password" placeholder="Enter Password" required />
+
+          <button type="submit">Login</button>
+        </form>
+
+        <div class="create">
+          <a href="#" id="createBtn">Create New Account</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- VANTA SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta/dist/vanta.birds.min.js"></script>
+
+    <script>
+      // Initialize Vanta and keep reference so we can destroy/resize if needed
+      let vantaEffect = null;
+      function initVanta() {
+        if (vantaEffect) vantaEffect.destroy();
+        vantaEffect = VANTA.BIRDS({
+          el: "#vanta",
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          backgroundAlpha: 0,
+          color1: 0x00ffff,
+          color2: 0x0066ff,
+          birdSize: 1.0,
+          wingSpan: 25.0,
+          speedLimit: 4.0,
+          separation: 40.0,
+          alignment: 34.0,
+          cohesion: 35.0
+        });
+      }
+      initVanta();
+
+      // Re-init on resize for better coverage on some mobile browsers
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => initVanta(), 300);
+      });
+
+      // EXIT Animation -> navigate to signUp
+      document.getElementById("createBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        const box = document.getElementById("loginBox");
+        box.style.transition = 'transform .6s ease, opacity .6s ease';
+        box.style.transform = 'scale(.9) translateY(-20px) rotateX(8deg)';
+        box.style.opacity = '0';
+        setTimeout(() => { window.location.href = '/signUp'; }, 650);
+      });
+
+      // Auto-hide error box after 3 seconds
+      const errorBox = document.getElementById("errorBox");
+      if (errorBox) {
+        setTimeout(() => {
+          errorBox.style.opacity = "0";
+          errorBox.style.transform = "scale(0.95)";
+          setTimeout(() => errorBox.remove(), 500);
+        }, 3000);
+      }
+
+      // Clear input fields on page reload (only if you want default empty)
+      window.addEventListener('pageshow', () => {
+        const u = document.querySelector('input[name="username"]');
+        const p = document.querySelector('input[name="password"]');
+        if (u) u.value = '';
+        if (p) p.value = '';
+      });
+
+    </script>
+  </body>
+</html>
